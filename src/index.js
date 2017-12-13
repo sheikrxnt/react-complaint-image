@@ -14,9 +14,8 @@ function SelectImages({ images, selected, onSelect }) {
   );
 }
 
-function Complaint({ pos: { x, y } }) {
-  console.log(`drawing complaint ${x} ${y}`);
-  return <Circle x={x} y={y} radius={10} stroke={"red"} strokeWidth={4} />;
+function Complaint({ pos: { x, y }, ...conf }) {
+  return <Circle x={x} y={y} {...conf} />;
 }
 
 export default class ComplainImage extends Component {
@@ -43,11 +42,10 @@ export default class ComplainImage extends Component {
       let complaints = state.complaints.concat({ pos: pointerPos });
       return Object.assign({}, state, { complaints });
     });
-    console.log(`Clicked ${JSON.stringify(pointerPos)}`);
   };
 
   render() {
-    let { images } = this.props;
+    let { images, complaint } = this.props;
     let { url, image, complaints } = this.state;
 
     return (
@@ -61,13 +59,23 @@ export default class ComplainImage extends Component {
           <Layer width={450} height={450} visible />
           <Layer width={450} height={450} visible>
             <Image image={image} />
-            {complaints.map((conf, i) => <Complaint key={i} {...conf} />)}
+            {complaints.map((conf, i) => (
+              <Complaint key={i} {...conf} {...complaint} />
+            ))}
           </Layer>
         </Stage>
       </div>
     );
   }
 }
+
+ComplainImage.defaultProps = {
+  complaint: {
+    radius: 10,
+    stroke: "red",
+    strokeWidth: 2,
+  },
+};
 
 ComplainImage.propTypes = {
   images: PropTypes.arrayOf(
@@ -76,4 +84,9 @@ ComplainImage.propTypes = {
       url: PropTypes.string.isRequired,
     })
   ).isRequired,
+  complaint: PropTypes.shape({
+    radius: PropTypes.number,
+    stroke: PropTypes.string,
+    strokeWidth: PropTypes.number,
+  }),
 };
