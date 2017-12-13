@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Stage, Layer, Image, Circle } from "react-konva";
+import { Stage, Layer, Image } from "react-konva";
+import Complaint from "./Complaint";
 
 function SelectImages({ images, selected, onSelect }) {
   return (
@@ -12,10 +13,6 @@ function SelectImages({ images, selected, onSelect }) {
       ))}
     </select>
   );
-}
-
-function Complaint({ pos: { x, y }, ...conf }) {
-  return <Circle x={x} y={y} {...conf} />;
 }
 
 export default class ComplainImage extends Component {
@@ -38,7 +35,12 @@ export default class ComplainImage extends Component {
     };
   };
 
-  handleClick = ({ currentTarget: { pointerPos } }) => {
+  handleClick = evt => {
+    let { currentTarget: { pointerPos }, target: { className } } = evt;
+    if (className === "Circle") {
+      return;
+    }
+
     this.setState(state => {
       let complaints = state.complaints.concat({ pos: pointerPos });
 
