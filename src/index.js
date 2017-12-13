@@ -34,14 +34,24 @@ export default class ComplainImage extends Component {
         image: image,
         url,
       });
+      this.notify(url, this.state.complaints);
     };
   };
 
   handleClick = ({ currentTarget: { pointerPos } }) => {
     this.setState(state => {
       let complaints = state.complaints.concat({ pos: pointerPos });
+
+      this.notify(this.state.url, complaints);
+
       return Object.assign({}, state, { complaints });
     });
+  };
+
+  notify = (url, complaints) => {
+    if (this.props.onChange) {
+      this.props.onChange({ url, complaints });
+    }
   };
 
   render() {
@@ -89,4 +99,5 @@ ComplainImage.propTypes = {
     stroke: PropTypes.string,
     strokeWidth: PropTypes.number,
   }),
+  onChange: PropTypes.func.isRequired,
 };

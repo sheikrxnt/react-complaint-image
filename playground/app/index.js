@@ -8,6 +8,9 @@ const images = [
 ];
 
 ReactDOM.render(
-  <ComplaintImage images={images} />,
+  <ComplaintImage
+    images={images}
+    onChange={state => console.log(JSON.stringify(state))}
+  />,
   document.getElementById("app")
 );
