@@ -61,8 +61,18 @@ export default class ComplainImage extends Component {
     this.setState(({ url, complaints }) => {
       let complaint = Object.assign({}, complaints[i], { text });
 
-      complaints = complaints.concat();
+      complaints = complaints.slice();
       complaints.splice(i, 1, complaint);
+
+      this.props.onChange({ url, complaints });
+      return { url, complaints };
+    });
+  };
+
+  handleDelete = i => {
+    this.setState(({ url, complaints }) => {
+      complaints = complaints.slice();
+      complaints.splice(i, 1);
 
       this.props.onChange({ url, complaints });
       return { url, complaints };
@@ -105,6 +115,7 @@ export default class ComplainImage extends Component {
           <Complaints
             complaints={complaints}
             onChange={this.handleTextChange}
+            onDelete={this.handleDelete}
           />
         </div>
       </div>
