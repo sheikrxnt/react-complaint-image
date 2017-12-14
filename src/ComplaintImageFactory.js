@@ -126,7 +126,6 @@ export default function(Complaints, SelectImages) {
   }
 
   ComplainImage.defaultProps = {
-    complaints: [],
     complaint: {
       circle: {
         radius: 10,
@@ -134,7 +133,8 @@ export default function(Complaints, SelectImages) {
         strokeWidth: 2,
       },
       text: {
-        fontSize: 18,
+        fontSize: 12,
+        fontFamily: "Roboto",
         fill: "black",
       },
     },
