@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
+import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { Image, Layer, Stage } from "react-konva";
 import ComplaintMarker from "./ComplaintMarker";
@@ -9,7 +10,7 @@ export default function(Complaints, SelectImages) {
     constructor(props) {
       super(props);
 
-      this.state = { url: "Loading", complaints: [] };
+      this.state = { url: "Loading", complaints: [], width: 450 };
       this.changeImage(props.images[0].url);
     }
 
@@ -17,11 +18,13 @@ export default function(Complaints, SelectImages) {
       const image = new window.Image();
       image.src = url;
       image.onload = () => {
-        this.setState({
-          image: image,
-          url,
-        });
-        this.notify(url, this.state.complaints);
+        this.setState(
+          {
+            image: image,
+            url,
+          },
+          this.notify
+        );
       };
     };
 
@@ -33,11 +36,8 @@ export default function(Complaints, SelectImages) {
 
       this.setState(state => {
         let complaints = state.complaints.concat({ pos: pointerPos });
-
-        this.notify(this.state.url, complaints);
-
         return Object.assign({}, state, { complaints });
-      });
+      }, this.notify);
     };
 
     handleTextChange = (i, text) => {
@@ -47,9 +47,8 @@ export default function(Complaints, SelectImages) {
         complaints = complaints.slice();
         complaints.splice(i, 1, complaint);
 
-        this.props.onChange({ url, complaints });
         return { url, complaints };
-      });
+      }, this.notify);
     };
 
     handleDelete = i => {
@@ -59,31 +58,48 @@ export default function(Complaints, SelectImages) {
 
         this.props.onChange({ url, complaints });
         return { url, complaints };
-      });
+      }, this.notify);
     };
 
-    notify = (url, complaints) => {
+    notify = () => {
       if (this.props.onChange) {
-        this.props.onChange({ url, complaints });
+        let event = { url: this.state.url, complaints: this.state.complaints };
+        this.props.onChange(event);
       }
     };
 
+    componentDidMount() {
+      let boundaries = ReactDOM.findDOMNode(
+        this.refs["image"]
+      ).getBoundingClientRect();
+      this.setState({ width: boundaries.width });
+    }
+
     render() {
-      let { images, complaint: { circle, text } } = this.props;
-      let { url, image, complaints } = this.state;
+      let {
+        images,
+        complaint: { circle, text },
+        imageClassName,
+        complaintClassName,
+        imagePadding,
+      } = this.props;
+      let { url, image, complaints, width } = this.state;
 
       return (
-        <div className="col-md-12">
-          <div className="col-md-4">
-            <h3 className="panel-title text-center">Select Image</h3>
+        <Fragment>
+          <div id="image" className={imageClassName} ref="image">
             <SelectImages
               images={images}
               selected={url}
               onSelect={this.changeImage}
             />
-            <Stage width={450} height={450} onClick={this.handleClick}>
-              <Layer width={450} height={450} visible>
-                <Image image={image} />
+            <Stage width={width} height={width} onClick={this.handleClick}>
+              <Layer width={width} height={width} visible>
+                <Image
+                  image={image}
+                  width={width - imagePadding}
+                  height={width - imagePadding}
+                />
                 {complaints.map((conf, i) => (
                   <ComplaintMarker key={i} index={i} {...conf} {...circle} />
                 ))}
@@ -93,15 +109,14 @@ export default function(Complaints, SelectImages) {
               </Layer>
             </Stage>
           </div>
-          <div className="col-md-8 text-center">
-            <h3 className="panel-title">Complaints</h3>
+          <div className={complaintClassName}>
             <Complaints
               complaints={complaints}
               onChange={this.handleTextChange}
               onDelete={this.handleDelete}
             />
           </div>
-        </div>
+        </Fragment>
       );
     }
   }
@@ -119,6 +134,9 @@ export default function(Complaints, SelectImages) {
         fill: "lightsalmon",
       },
     },
+    imagePadding: 30,
+    imageClassName: "col-md-5 col-sm-12",
+    complaintClassName: "col-md-7 col-sm-12",
   };
 
   ComplainImage.propTypes = {
@@ -128,12 +146,15 @@ export default function(Complaints, SelectImages) {
         url: PropTypes.string.isRequired,
       })
     ).isRequired,
+    imagePadding: PropTypes.number,
+    imageClassName: PropTypes.string,
+    complaintClassName: PropTypes.string,
     complaint: PropTypes.shape({
       radius: PropTypes.number,
       stroke: PropTypes.string,
       strokeWidth: PropTypes.number,
     }),
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
   };
 
   return ComplainImage;
