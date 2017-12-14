@@ -1,11 +1,13 @@
 import ReactDOM from "react-dom";
 import React from "react";
-import ComplaintImage from "../../src";
+import factory from "../../src";
 
 const images = [
   { name: "Female Anatomy", url: "/app/female-anatomy.jpg" },
   { name: "Male Anatomy", url: "/app/male-anatomy.jpg" },
 ];
+
+let ComplaintImage = factory();
 
 ReactDOM.render(
   <ComplaintImage

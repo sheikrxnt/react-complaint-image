@@ -35,24 +35,18 @@ class Complaint extends Component {
   render() {
     return (
       <div>
-        <div className="col-md-8">
-          <input
-            autoFocus={true}
-            type="text"
-            value={this.state.value}
-            className="form-control"
-            onKeyDown={this.handleKeyDown}
-            onBlur={this.handleSubmit}
-            onChange={this.handleChange}
-          />
-        </div>
-        <div className="col-md-4">
-          <button
-            className="btn btn-default"
-            onClick={() => this.props.onDelete()}>
-            Delete
-          </button>
-        </div>
+        <input
+          autoFocus={true}
+          type="text"
+          value={this.state.value}
+          className="form-control"
+          onKeyDown={this.handleKeyDown}
+          onBlur={this.handleSubmit}
+          onChange={this.handleChange}
+        />
+        <button className="btn btn-default" onClick={this.props.onDelete}>
+          Delete
+        </button>
       </div>
     );
   }
