@@ -40,13 +40,7 @@ const value = {
     },
     { pos: { x: 174, y: 26 }, text: "" },
     { pos: { x: 220, y: 47 }, text: "" },
-    {
-      pos: {
-        x: 261,
-        y: 70,
-      },
-      text: "",
-    },
+    { pos: { x: 261, y: 70 }, text: "" },
     { pos: { x: 211, y: 95 }, text: "" },
     { pos: { x: 278, y: 139 }, text: "" },
     {
@@ -56,26 +50,6 @@ const value = {
       },
       text: "",
     },
-    { pos: { x: 278, y: 107 }, text: "" },
-    { pos: { x: 130, y: 89 }, text: "" },
-    {
-      pos: {
-        x: 69,
-        y: 86,
-      },
-      text: "",
-    },
-    { pos: { x: 47, y: 169 }, text: "" },
-    { pos: { x: 62, y: 136 }, text: "" },
-    {
-      pos: {
-        x: 41,
-        y: 102,
-      },
-      text: "",
-    },
-    { pos: { x: 58, y: 42 }, text: "" },
-    { pos: { x: 100, y: 53 }, text: "" },
   ],
 };
 
@@ -85,6 +59,15 @@ ReactDOM.render(
   <ComplaintImage
     images={images}
     value={value}
+    markerColors={[
+      "#38A8E8",
+      "#5D6C89",
+      "#8C756A",
+      "#1AC8DB",
+      "#0292B7",
+      "#5B7485",
+      "#89CFF0",
+    ]}
     onChange={state => console.log(JSON.stringify(state))}
   />,
   document.getElementById("app")

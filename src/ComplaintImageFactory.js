@@ -86,6 +86,7 @@ export default function(Complaints, SelectImages) {
         imageClassName,
         complaintClassName,
         imagePadding,
+        markerColors,
       } = this.props;
       let { url, image, complaints, width } = this.state;
 
@@ -104,18 +105,35 @@ export default function(Complaints, SelectImages) {
                   width={width - imagePadding}
                   height={width - imagePadding}
                 />
-                {complaints.map((conf, i) => (
-                  <ComplaintMarker key={i} index={i} {...conf} {...circle} />
-                ))}
-                {complaints.map((conf, i) => (
-                  <ComplaintIndicator key={i} index={i} {...conf} {...text} />
-                ))}
+                {complaints.map((conf, i) => {
+                  let stroke = markerColors
+                    ? markerColors[i % markerColors.length]
+                    : circle.stroke;
+                  let markerConf = Object.assign({}, conf, circle, { stroke });
+                  return <ComplaintMarker key={i} {...markerConf} />;
+                })}
+                {complaints.map((conf, i) => {
+                  let fill = markerColors
+                    ? markerColors[i % markerColors.length]
+                    : circle.fill;
+                  let indicatorConf = Object.assign({}, conf, text, { fill });
+                  return (
+                    <Fragment>
+                      <ComplaintIndicator
+                        key={i}
+                        index={i}
+                        {...indicatorConf}
+                      />
+                    </Fragment>
+                  );
+                })}
               </Layer>
             </Stage>
           </div>
           <div className={complaintClassName}>
             <Complaints
               complaints={complaints}
+              markerColors={markerColors}
               onChange={this.handleTextChange}
               onDelete={this.handleDelete}
             />
@@ -170,6 +188,7 @@ export default function(Complaints, SelectImages) {
       stroke: PropTypes.string,
       strokeWidth: PropTypes.number,
     }),
+    markerColors: PropTypes.arrayOf(PropTypes.string),
     onChange: PropTypes.func,
   };
 
