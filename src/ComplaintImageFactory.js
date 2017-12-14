@@ -10,8 +10,12 @@ export default function(Complaints, SelectImages) {
     constructor(props) {
       super(props);
 
-      this.state = { url: "Loading", complaints: [], width: 450 };
-      this.changeImage(props.images[0].url);
+      let {
+        value: { url = props.images[0].url, complaints = [] } = {},
+      } = this.props;
+
+      this.state = { url, complaints, width: 450 };
+      this.changeImage(url);
     }
 
     changeImage = url => {
@@ -130,8 +134,8 @@ export default function(Complaints, SelectImages) {
         strokeWidth: 2,
       },
       text: {
-        fontSize: 14,
-        fill: "lightsalmon",
+        fontSize: 18,
+        fill: "black",
       },
     },
     imagePadding: 30,
@@ -140,6 +144,18 @@ export default function(Complaints, SelectImages) {
   };
 
   ComplainImage.propTypes = {
+    value: PropTypes.shape({
+      url: PropTypes.string.isRequired,
+      complaint: PropTypes.arrayOf(
+        PropTypes.shape({
+          pos: PropTypes.shape({
+            x: PropTypes.number.isRequired,
+            y: PropTypes.number.isRequired,
+          }),
+          text: PropTypes.string.isRequired,
+        })
+      ),
+    }),
     images: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,

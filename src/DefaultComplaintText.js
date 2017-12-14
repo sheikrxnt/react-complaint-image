@@ -70,7 +70,7 @@ export default function ComplaintText({ complaints, onChange, onDelete }) {
         {complaints.map((complaint, i) => (
           <Fragment key={i}>
             <tr>
-              <td style={{ paddingTop: 14 }}>{i}</td>
+              <td style={{ paddingTop: 14 }}>{i + 1}</td>
               <Complaint
                 {...complaint}
                 onChange={text => onChange(i, text)}
