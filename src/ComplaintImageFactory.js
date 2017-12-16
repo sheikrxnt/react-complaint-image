@@ -15,20 +15,18 @@ export default function(Complaints, SelectImages) {
       } = this.props;
 
       this.state = { url, complaints, width: 450 };
-      this.changeImage(url);
+      this.changeImage(url, false);
     }
 
-    changeImage = url => {
+    changeImage = (url, notifyOnLoad = true) => {
       const image = new window.Image();
       image.src = url;
       image.onload = () => {
-        this.setState(
-          {
-            image: image,
-            url,
-          },
-          this.notify
-        );
+        if (notifyOnLoad) {
+          this.setState({ image, url }, this.notify);
+        } else {
+          this.setState({ image, url });
+        }
       };
     };
 
@@ -118,13 +116,7 @@ export default function(Complaints, SelectImages) {
                     : circle.fill;
                   let indicatorConf = Object.assign({}, conf, text, { fill });
                   return (
-                    <Fragment>
-                      <ComplaintIndicator
-                        key={i}
-                        index={i}
-                        {...indicatorConf}
-                      />
-                    </Fragment>
+                    <ComplaintIndicator key={i} index={i} {...indicatorConf} />
                   );
                 })}
               </Layer>
