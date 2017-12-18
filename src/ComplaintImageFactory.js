@@ -14,7 +14,7 @@ export default function(Complaints, SelectImages) {
         value: { url = props.images[0].url, complaints = [] } = {},
       } = this.props;
 
-      this.state = { url, complaints, width: 450 };
+      this.state = { url, complaints };
       this.changeImage(url, false);
     }
 
@@ -71,10 +71,19 @@ export default function(Complaints, SelectImages) {
     };
 
     componentDidMount() {
-      let boundaries = ReactDOM.findDOMNode(
-        this.refs["image"]
+      let { width } = ReactDOM.findDOMNode(
+        this.refs["image-frame"]
       ).getBoundingClientRect();
-      this.setState({ width: boundaries.width });
+      let { imagePadding } = this.props;
+
+      let stage = this.refs.stage.getStage();
+
+      stage.width(width);
+      stage.height(width);
+
+      let image = this.refs.image;
+      image.width(width - imagePadding);
+      image.height(width - imagePadding);
     }
 
     render() {
@@ -83,26 +92,21 @@ export default function(Complaints, SelectImages) {
         complaint: { circle, text },
         imageClassName,
         complaintClassName,
-        imagePadding,
         markerColors,
       } = this.props;
-      let { url, image, complaints, width } = this.state;
+      let { url, image, complaints } = this.state;
 
       return (
         <Fragment>
-          <div id="image" className={imageClassName} ref="image">
+          <div id="image" className={imageClassName} ref="image-frame">
             <SelectImages
               images={images}
               selected={url}
               onSelect={this.changeImage}
             />
-            <Stage width={width} height={width} onClick={this.handleClick}>
-              <Layer width={width} height={width} visible>
-                <Image
-                  image={image}
-                  width={width - imagePadding}
-                  height={width - imagePadding}
-                />
+            <Stage onClick={this.handleClick} ref="stage">
+              <Layer visible ref="layer">
+                <Image ref="image" image={image} />
                 {complaints.map((conf, i) => {
                   let stroke = markerColors
                     ? markerColors[i % markerColors.length]
