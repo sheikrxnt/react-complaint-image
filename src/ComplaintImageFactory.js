@@ -65,7 +65,12 @@ export default function(Complaints, SelectImages) {
 
     notify = () => {
       if (this.props.onChange) {
-        let event = { url: this.state.url, complaints: this.state.complaints };
+        let stage = this.refs.stage.getStage();
+        let event = {
+          url: this.state.url,
+          complaints: this.state.complaints,
+          dataURI: stage.toDataURL(),
+        };
         this.props.onChange(event);
       }
     };
