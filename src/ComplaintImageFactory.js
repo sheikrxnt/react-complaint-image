@@ -4,6 +4,7 @@ import PropTypes from "prop-types";
 import { Image, Layer, Stage } from "react-konva";
 import ComplaintMarker from "./ComplaintMarker";
 import ComplaintIndicator from "./ComplaintIndicator";
+import { setTimeout } from "timers";
 
 export default function(Complaints, SelectImages) {
   class ComplainImage extends Component {
@@ -64,15 +65,23 @@ export default function(Complaints, SelectImages) {
     };
 
     notify = () => {
-      if (this.props.onChange) {
-        let stage = this.refs.stage.getStage();
-        let event = {
-          url: this.state.url,
-          complaints: this.state.complaints,
-          dataURI: stage.toDataURL(),
-        };
-        this.props.onChange(event);
-      }
+      /** 
+        I believe render is in the call stack and this async operation settimeout sends the function to the webapi.
+        Even if the timeout is 0, it does not get added to the call stack until the call stack is empty
+        this solves our problem of notify executing before the render function
+        or use promise new Promise((event) => setTimeout(event, 10)).then(()=> {
+      */
+      setTimeout(() => {
+        if (this.props.onChange) {
+          let stage = this.refs.stage.getStage();
+          let event = {
+            url: this.state.url,
+            complaints: this.state.complaints,
+            dataURI: stage.toDataURL(),
+          };
+          this.props.onChange(event);
+        }
+      }, 0);
     };
 
     componentDidMount() {

@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import React from "react";
+import React, { Component } from "react";
 import factory from "../../src";
 
 const images = [
@@ -53,22 +53,39 @@ const value = {
   ],
 };
 
+class ImageDisplay extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      dataURI: "",
+    };
+  }
+  render() {
+    return (
+      <div>
+        <ComplaintImage
+          images={images}
+          value={value}
+          markerColors={[
+            "#38A8E8",
+            "#5D6C89",
+            "#8C756A",
+            "#1AC8DB",
+            "#0292B7",
+            "#5B7485",
+            "#89CFF0",
+          ]}
+          onChange={({ dataURI }) => this.setState({ dataURI })}
+        />
+        <div id="mac">
+          <h1>Image Display</h1>
+          <img src={this.state.dataURI} />
+        </div>
+      </div>
+    );
+  }
+}
+
 let ComplaintImage = factory();
 
-ReactDOM.render(
-  <ComplaintImage
-    images={images}
-    value={value}
-    markerColors={[
-      "#38A8E8",
-      "#5D6C89",
-      "#8C756A",
-      "#1AC8DB",
-      "#0292B7",
-      "#5B7485",
-      "#89CFF0",
-    ]}
-    onChange={state => console.log(JSON.stringify(state))}
-  />,
-  document.getElementById("app")
-);
+ReactDOM.render(<ImageDisplay />, document.getElementById("app"));
