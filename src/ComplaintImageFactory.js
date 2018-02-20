@@ -24,7 +24,7 @@ export default function(Complaints, SelectImages) {
       image.src = url;
       image.onload = () => {
         if (notifyOnLoad) {
-          this.setState({ image, url }, this.notify);
+          this.setState({ image, url, complaints: [] }, this.notify);
         } else {
           this.setState({ image, url });
         }
