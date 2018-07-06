@@ -120,7 +120,6 @@ export default function(Complaints, SelectImages) {
             />
             <Stage
               onClick={this.handleClick}
-              onTap={this.handleTap}
               ref="stage">
               <Layer visible ref="layer">
                 <Image ref="image" image={image} />
