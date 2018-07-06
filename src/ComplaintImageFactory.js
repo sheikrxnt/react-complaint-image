@@ -43,6 +43,18 @@ export default function(Complaints, SelectImages) {
       }, this.notify);
     };
 
+    handleTap = evt => {
+      let { currentTarget: { pointerPos }, target: { className } } = evt;
+      if (className !== "Image") {
+        return;
+      }
+
+      this.setState(state => {
+        let complaints = state.complaints.concat({ pos: pointerPos });
+        return Object.assign({}, state, { complaints });
+      }, this.notify);
+    };
+
     handleTextChange = (i, text) => {
       this.setState(({ url, complaints }) => {
         let complaint = Object.assign({}, complaints[i], { text });
@@ -120,6 +132,7 @@ export default function(Complaints, SelectImages) {
             />
             <Stage
               onClick={this.handleClick}
+              onTap={this.handleTap}
               ref="stage">
               <Layer visible ref="layer">
                 <Image ref="image" image={image} />
