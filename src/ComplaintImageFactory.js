@@ -130,6 +130,25 @@ export default function(Complaints, SelectImages) {
               selected={url}
               onSelect={this.changeImage}
             />
+            <div className="pull-right">
+              <a
+                className="btn btn-success-green"
+                style={{
+                  position: "relative",
+                  zIndex: 99,
+                  fontSize: 10,
+                  color: "red",
+                  marginLeft: "10px",
+                }}
+                onClick={() => {
+                  this.setState({
+                    complaints: [],
+                  });
+                }}>
+                <span className="glyphicon glyphicon-refresh" />
+                &nbsp;Clear All
+              </a>
+            </div>
             <Stage
               onClick={this.handleClick}
               onTap={this.handleTap}
