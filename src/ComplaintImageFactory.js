@@ -132,20 +132,27 @@ export default function(Complaints, SelectImages) {
             />
             <div>
               <a
-                className="btn btn-success-green"
+                className="btn"
                 style={{
                   position: "absolute",
-                  left: "5px",
+                  left: "1px",
+                  padding: "2px",
                   zIndex: 99,
-                  fontSize: 10,
+                  fontSize: "10px",
                   color: "red",
                 }}
                 onClick={() => {
-                  this.setState({
-                    complaints: [],
-                  });
+                  this.setState(
+                    {
+                      complaints: [],
+                    },
+                    this.notify
+                  );
                 }}>
-                <span className="glyphicon glyphicon-refresh" />
+                <span
+                  style={{ fontSize: "10px" }}
+                  className="glyphicon glyphicon-refresh"
+                />
                 &nbsp;Clear All
               </a>
             </div>
