@@ -130,15 +130,15 @@ export default function(Complaints, SelectImages) {
               selected={url}
               onSelect={this.changeImage}
             />
-            <div className="pull-right">
+            <div>
               <a
                 className="btn btn-success-green"
                 style={{
-                  position: "relative",
+                  position: "absolute",
+                  left: "5px",
                   zIndex: 99,
                   fontSize: 10,
                   color: "red",
-                  marginLeft: "10px",
                 }}
                 onClick={() => {
                   this.setState({
