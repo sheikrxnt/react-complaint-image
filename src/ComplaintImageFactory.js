@@ -231,19 +231,17 @@ export default function(Complaints, SelectImages) {
   };
 
   ComplainImage.propTypes = {
-    value: PropTypes.objectOf(
-      PropTypes.shape({
-        complaint: PropTypes.arrayOf(
-          PropTypes.shape({
-            pos: PropTypes.shape({
-              x: PropTypes.number.isRequired,
-              y: PropTypes.number.isRequired,
-            }),
-            text: PropTypes.string.isRequired,
-          })
-        ),
-      })
-    ),
+    value: PropTypes.shape({
+      complaint: PropTypes.arrayOf(
+        PropTypes.shape({
+          pos: PropTypes.shape({
+            x: PropTypes.number.isRequired,
+            y: PropTypes.number.isRequired,
+          }),
+          text: PropTypes.string.isRequired,
+        })
+      ),
+    }),
     images: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
