@@ -7,8 +7,8 @@ export default function SelectImages({ images, selected, onSelect }) {
         onChange={evt => onSelect(evt.target.value)}
         value={selected}
         className="form-control">
-        {images.map(({ name, url }, i) => (
-          <option key={i} value={url}>
+        {images.map(({ name, key }, i) => (
+          <option key={i} value={key}>
             {name}
           </option>
         ))}

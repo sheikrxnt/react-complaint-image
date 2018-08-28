@@ -3,61 +3,71 @@ import React, { Component } from "react";
 import factory from "../../src";
 
 const images = [
-  { name: "Male Anatomy", url: "/app/male-anatomy.jpg" },
-  { name: "Female Anatomy", url: "/app/female-anatomy.jpg" },
+  { name: "Male Anatomy", url: "/app/male-anatomy.jpg", key: "male" },
+  { name: "Female Anatomy", url: "/app/female-anatomy.jpg", key: "female" },
 ];
 
 const value = {
-  url: "/app/female-anatomy.jpg",
-  complaints: [
-    { pos: { x: 419, y: 36 }, text: "Hair burned" },
-    {
-      pos: { x: 201, y: 219 },
-      text: "Damage to the liver",
-    },
-    { pos: { x: 345, y: 360 }, text: "Knee pain" },
-    {
-      pos: { x: 362, y: 125 },
-      text: "",
-    },
-    { pos: { x: 410, y: 97 }, text: "" },
-    { pos: { x: 335, y: 31 }, text: "" },
-    {
-      pos: {
-        x: 364,
-        y: 234,
+  active: "female",
+  male: {
+    name: "Male Anatomy",
+    url: "/app/male-anatomy.jpg",
+    complaints: [
+      { pos: { x: 419, y: 36 }, text: "Hair burned" },
+      {
+        pos: { x: 201, y: 219 },
+        text: "Damage to the liver",
       },
-      text: "",
-    },
-    { pos: { x: 372, y: 54 }, text: "" },
-    { pos: { x: 184, y: 57 }, text: "" },
-    {
-      pos: {
-        x: 141,
-        y: 29,
+      { pos: { x: 345, y: 360 }, text: "Knee pain" },
+      {
+        pos: { x: 362, y: 125 },
+        text: "",
       },
-      text: "",
-    },
-    { pos: { x: 174, y: 26 }, text: "" },
-    { pos: { x: 220, y: 47 }, text: "" },
-    { pos: { x: 261, y: 70 }, text: "" },
-    { pos: { x: 211, y: 95 }, text: "" },
-    { pos: { x: 278, y: 139 }, text: "" },
-    {
-      pos: {
-        x: 229,
-        y: 121,
+      { pos: { x: 410, y: 97 }, text: "" },
+      { pos: { x: 335, y: 31 }, text: "" },
+      {
+        pos: {
+          x: 364,
+          y: 234,
+        },
+        text: "",
       },
-      text: "",
-    },
-  ],
+      { pos: { x: 372, y: 54 }, text: "" },
+      { pos: { x: 184, y: 57 }, text: "" },
+      {
+        pos: {
+          x: 141,
+          y: 29,
+        },
+        text: "",
+      },
+      { pos: { x: 174, y: 26 }, text: "" },
+      { pos: { x: 220, y: 47 }, text: "" },
+      { pos: { x: 261, y: 70 }, text: "" },
+      { pos: { x: 211, y: 95 }, text: "" },
+      { pos: { x: 278, y: 139 }, text: "" },
+      {
+        pos: {
+          x: 229,
+          y: 121,
+        },
+        text: "",
+      },
+    ],
+  },
+  female: {
+    name: "Female Anatomy",
+    url: "/app/female-anatomy.jpg",
+    complaints: [{ pos: { x: 419, y: 36 }, text: "Hair burned" }],
+  },
 };
 
 class ImageDisplay extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      dataURI: "",
+      maleDataURI: "",
+      femaleDataURI: "",
     };
   }
   render() {
@@ -75,11 +85,19 @@ class ImageDisplay extends Component {
             "#5B7485",
             "#89CFF0",
           ]}
-          onChange={({ dataURI }) => this.setState({ dataURI })}
+          onChange={data => {
+            let {
+              female: { dataURI: femaleDataURI },
+              male: { dataURI: maleDataURI },
+            } = data;
+            console.log(data);
+            this.setState({ maleDataURI, femaleDataURI });
+          }}
         />
         <div id="mac">
           <h1>Image Display</h1>
-          <img src={this.state.dataURI} />
+          <img src={this.state.maleDataURI} />
+          <img src={this.state.femaleDataURI} />
         </div>
       </div>
     );
