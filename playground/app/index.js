@@ -1,6 +1,7 @@
 import ReactDOM from "react-dom";
 import React, { Component } from "react";
-import factory from "../../src";
+// import { complaintImageFactory } from "../../src";
+import { multipleComplaintImageFactory } from "../../src";
 
 const images = [
   { name: "Male Anatomy", url: "/app/male-anatomy.jpg", key: "male" },
@@ -104,6 +105,6 @@ class ImageDisplay extends Component {
   }
 }
 
-let ComplaintImage = factory();
+let ComplaintImage = multipleComplaintImageFactory();
 
 ReactDOM.render(<ImageDisplay />, document.getElementById("app"));

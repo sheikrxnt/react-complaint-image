@@ -7,26 +7,27 @@ import ComplaintIndicator from "./ComplaintIndicator";
 import { setTimeout } from "timers";
 
 export default function(Complaints, SelectImages) {
-  class ComplainImage extends Component {
+  class MultipleComplaintImage extends Component {
     constructor(props) {
       super(props);
-
       let {
-        value: { url = props.images[0].url, complaints = [] } = {},
+        value,
+        value: { active }, //: { url = props.images[0].url, complaints = [] } = {},
       } = this.props;
 
-      this.state = { url, complaints };
-      this.changeImage(url, false);
+      this.state = { ...value };
+      this.changeImage(active, false);
     }
 
-    changeImage = (url, notifyOnLoad = true) => {
+    changeImage = (active, notifyOnLoad = true) => {
       const image = new window.Image();
-      image.src = url;
+      let currentUrl = this.state[active] && this.state[active].url;
+      image.src = currentUrl;
       image.onload = () => {
         if (notifyOnLoad) {
-          this.setState({ image, url, complaints: [] }, this.notify);
+          this.setState({ image, active }, this.notify);
         } else {
-          this.setState({ image, url });
+          this.setState({ image, active });
         }
       };
     };
@@ -38,8 +39,11 @@ export default function(Complaints, SelectImages) {
       }
 
       this.setState(state => {
-        let complaints = state.complaints.concat({ pos: pointerPos });
-        return Object.assign({}, state, { complaints });
+        let { active } = state;
+        let activeObject = state[active];
+        let complaints = activeObject.complaints.concat({ pos: pointerPos });
+        let updatedItem = { [active]: { ...activeObject, complaints } };
+        return Object.assign({}, state, updatedItem);
       }, this.notify);
     };
 
@@ -50,29 +54,46 @@ export default function(Complaints, SelectImages) {
       }
 
       this.setState(state => {
-        let complaints = state.complaints.concat({ pos: pointerPos });
-        return Object.assign({}, state, { complaints });
+        let { active } = state;
+        let activeObject = state[active];
+        let complaints = activeObject.complaints.concat({ pos: pointerPos });
+        let updatedItem = { [active]: { ...activeObject, complaints } };
+        return Object.assign({}, state, updatedItem);
       }, this.notify);
     };
 
     handleTextChange = (i, text) => {
-      this.setState(({ url, complaints }) => {
+      this.setState(state => {
+        let { active } = state;
+        let activeObj = state[active];
+        let complaints = activeObj.complaints;
         let complaint = Object.assign({}, complaints[i], { text });
-
         complaints = complaints.slice();
         complaints.splice(i, 1, complaint);
 
-        return { url, complaints };
+        let updatedItem = { [active]: { ...activeObj, complaints } };
+        return Object.assign({}, state, updatedItem);
       }, this.notify);
     };
 
     handleDelete = i => {
-      this.setState(({ url, complaints }) => {
+      this.setState(state => {
+        let { active } = state;
+        let activeObj = state[active];
+        let complaints = activeObj.complaints;
         complaints = complaints.slice();
         complaints.splice(i, 1);
+        let updatedItem = { [active]: { ...activeObj, complaints } };
+        return Object.assign({}, state, updatedItem);
+      }, this.notify);
+    };
 
-        this.props.onChange({ url, complaints });
-        return { url, complaints };
+    handleClearAll = () => {
+      this.setState(state => {
+        let { active } = state;
+        let activeObj = state[active];
+        let updatedItem = { [active]: { ...activeObj, complaints: [] } };
+        return Object.assign({}, state, updatedItem);
       }, this.notify);
     };
 
@@ -83,13 +104,15 @@ export default function(Complaints, SelectImages) {
         this solves our problem of notify executing before the render function
         or use promise new Promise((event) => setTimeout(event, 10)).then(()=> {
       */
+
       setTimeout(() => {
+        // this is done to prevent passing active and image objects to the onchange event
+        let { active, image, ...values } = this.state;
         if (this.props.onChange) {
           let stage = this.refs.stage.getStage();
+          values[active] ? (values[active].dataURI = stage.toDataURL()) : null;
           let event = {
-            url: this.state.url,
-            complaints: this.state.complaints,
-            dataURI: stage.toDataURL(),
+            ...values,
           };
           this.props.onChange(event);
         }
@@ -120,14 +143,15 @@ export default function(Complaints, SelectImages) {
         complaintClassName,
         markerColors,
       } = this.props;
-      let { url, image, complaints } = this.state;
+      let { active, image } = this.state;
+      let complaints = this.state[active].complaints;
 
       return (
         <Fragment>
           <div id="image" className={imageClassName} ref="image-frame">
             <SelectImages
               images={images}
-              selected={url}
+              selected={active}
               onSelect={this.changeImage}
             />
             <div>
@@ -137,18 +161,11 @@ export default function(Complaints, SelectImages) {
                   position: "absolute",
                   left: "1px",
                   padding: "2px",
-                  zIndex: 99,
+                  zIndex: 1,
                   fontSize: "10px",
                   color: "red",
                 }}
-                onClick={() => {
-                  this.setState(
-                    {
-                      complaints: [],
-                    },
-                    this.notify
-                  );
-                }}>
+                onClick={this.handleClearAll}>
                 <span
                   style={{ fontSize: "10px" }}
                   className="glyphicon glyphicon-refresh"
@@ -194,7 +211,7 @@ export default function(Complaints, SelectImages) {
     }
   }
 
-  ComplainImage.defaultProps = {
+  MultipleComplaintImage.defaultProps = {
     complaint: {
       circle: {
         radius: 10,
@@ -212,9 +229,8 @@ export default function(Complaints, SelectImages) {
     complaintClassName: "col-md-7 col-sm-12",
   };
 
-  ComplainImage.propTypes = {
+  MultipleComplaintImage.propTypes = {
     value: PropTypes.shape({
-      url: PropTypes.string.isRequired,
       complaint: PropTypes.arrayOf(
         PropTypes.shape({
           pos: PropTypes.shape({
@@ -243,5 +259,5 @@ export default function(Complaints, SelectImages) {
     onChange: PropTypes.func,
   };
 
-  return ComplainImage;
+  return MultipleComplaintImage;
 }
