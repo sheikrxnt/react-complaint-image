@@ -107,7 +107,8 @@ export default function(Complaints, SelectImages) {
 
       setTimeout(() => {
         // this is done to prevent passing active and image objects to the onchange event
-        let { active, image, ...values } = this.state;
+        let { image, ...values } = this.state;
+        let { active } = this.state;
         if (this.props.onChange) {
           let stage = this.refs.stage.getStage();
           values[active] ? (values[active].dataURI = stage.toDataURL()) : null;
