@@ -7,13 +7,50 @@ import {
 } from "../../src";
 
 const images = [
-  { name: "Male Anatomy", url: "/app/male-anatomy.jpg", key: "male" },
-  { name: "Female Anatomy", url: "/app/female-anatomy.jpg", key: "female" },
+  {
+    name: "Male Anatomy",
+    url: "/app/male-anatomy.jpg",
+    key: "male",
+    uiDisplay: "typeahead",
+    uiOptions: {
+      options: [
+        "Male",
+        "Head and Heck",
+        "Neck",
+        "Liver",
+        "Hair burned",
+        "Damage to the liver",
+        "Knee pain",
+      ],
+      multiple: true,
+      allowNew: true,
+      autoFocus: true,
+    },
+  },
+  {
+    name: "Female Anatomy",
+    url: "/app/female-anatomy.jpg",
+    key: "female",
+    uiDisplay: "typeahead",
+    uiOptions: {
+      options: [
+        "Female",
+        "Head and Heck",
+        "Neck",
+        "Liver",
+        "Hair burned",
+        "Damage to the liver",
+        "Knee pain",
+      ],
+      multiple: false,
+      allowNew: true,
+      autoFocus: true,
+    },
+  },
 ];
 
 const singleImageValue = {
   //eslint-disable-line
-
   url: "/app/male-anatomy.jpg",
   complaints: [
     { pos: { x: 419, y: 36 }, text: "Hair burned" },
@@ -57,20 +94,6 @@ const singleImageValue = {
       text: "Some Issues",
     },
   ],
-  uiDisplay: "typeahead",
-  uiOptions: {
-    options: [
-      "Head and Heck",
-      "Neck",
-      "Liver",
-      "Hair burned",
-      "Damage to the liver",
-      "Knee pain",
-    ],
-    multiple: true,
-    allowNew: true,
-    autoFocus: true,
-  },
 };
 
 const value = {
@@ -120,29 +143,11 @@ const value = {
         text: "",
       },
     ],
-    // "uiDisplay": "typeahead",
-    // uiOptions: {
-    //   options: ['Head', "Neck", "Liver", "Hair burned", "Damage to the liver", "Knee pain"],
-    //   multiple: false
-    // }
   },
   female: {
     name: "Female Anatomy",
     url: "/app/female-anatomy.jpg",
     complaints: [{ pos: { x: 419, y: 36 }, text: "Hair burned" }],
-    uiDisplay: "typeahead",
-    uiOptions: {
-      options: [
-        "Head",
-        "Neck",
-        "Liver",
-        "Hair burned",
-        "Damage to the liver",
-        "Knee pain",
-      ],
-      multiple: true,
-      autoFocus: true,
-    },
   },
 };
 

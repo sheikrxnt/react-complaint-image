@@ -153,6 +153,15 @@ export default function(Complaints, SelectImages) {
       let { active, image } = this.state;
       let complaints = this.state[active].complaints;
 
+      let uiDisplay = null;
+      let uiOptions = null;
+      this.props.images.forEach(item => {
+        if (item.key === this.state.active) {
+          uiDisplay = item.uiDisplay;
+          uiOptions = item.uiOptions;
+        }
+      });
+
       return (
         <Fragment>
           <div id="image" className={imageClassName} ref="image-frame">
@@ -211,8 +220,8 @@ export default function(Complaints, SelectImages) {
               markerColors={markerColors}
               onChange={this.handleTextChange}
               onDelete={this.handleDelete}
-              uiDisplay={this.state[this.state.active].uiDisplay}
-              uiOptions={this.state[this.state.active].uiOptions}
+              uiDisplay={uiDisplay}
+              uiOptions={uiOptions}
             />
           </div>
         </Fragment>

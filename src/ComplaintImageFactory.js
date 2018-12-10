@@ -128,6 +128,15 @@ export default function(Complaints, SelectImages) {
       } = this.props;
       let { url, image, complaints } = this.state;
 
+      let uiDisplay = null;
+      let uiOptions = null;
+      this.props.images.forEach(item => {
+        if (item.url === this.state.url) {
+          uiDisplay = item.uiDisplay;
+          uiOptions = item.uiOptions;
+        }
+      });
+
       return (
         <Fragment>
           <div id="image" className={imageClassName} ref="image-frame">
@@ -193,8 +202,8 @@ export default function(Complaints, SelectImages) {
               markerColors={markerColors}
               onChange={this.handleTextChange}
               onDelete={this.handleDelete}
-              uiDisplay={this.props.value.uiDisplay}
-              uiOptions={this.props.value.uiOptions}
+              uiDisplay={uiDisplay}
+              uiOptions={uiOptions}
             />
           </div>
         </Fragment>
