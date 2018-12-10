@@ -32,7 +32,10 @@ export default function(Complaints, SelectImages) {
     };
 
     handleClick = evt => {
-      let { currentTarget: { pointerPos }, target: { className } } = evt;
+      let {
+        currentTarget: { pointerPos },
+        target: { className },
+      } = evt;
       if (className !== "Image") {
         return;
       }
@@ -44,7 +47,10 @@ export default function(Complaints, SelectImages) {
     };
 
     handleTap = evt => {
-      let { currentTarget: { pointerPos }, target: { className } } = evt;
+      let {
+        currentTarget: { pointerPos },
+        target: { className },
+      } = evt;
       if (className !== "Image") {
         return;
       }
@@ -187,6 +193,8 @@ export default function(Complaints, SelectImages) {
               markerColors={markerColors}
               onChange={this.handleTextChange}
               onDelete={this.handleDelete}
+              uiDisplay={this.props.value.uiDisplay}
+              uiOptions={this.props.value.uiOptions}
             />
           </div>
         </Fragment>

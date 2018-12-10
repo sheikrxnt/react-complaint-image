@@ -3,7 +3,7 @@
   "description": "React Component, that allows to register patient complains on the image",
   "private": false,
   "author": "mavarazy@gmail.com",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "scripts": {
     "build:lib": "rimraf lib && cross-env NODE_ENV=production babel -d lib/ src/",
     "build:dist": "rimraf dist && cross-env NODE_ENV=production webpack --config webpack.config.dist.js --optimize-minimize",
@@ -49,8 +49,9 @@
   },
   "dependencies": {
     "deepcopy": "^0.6.3",
-    "konva": "^1.7.6",
-    "react-konva": "^1.6.4",
+    "konva": "^2.5.1",
+    "react-bootstrap-typeahead": "^3.2.4",
+    "react-konva": "^16.6.31",
     "selectn": "^1.1.2"
   },
   "devDependencies": {

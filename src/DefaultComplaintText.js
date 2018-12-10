@@ -1,21 +1,43 @@
 import React, { Component, Fragment } from "react";
+import { Typeahead } from "react-bootstrap-typeahead";
 
 class Complaint extends Component {
   constructor(props) {
     super(props);
 
     let { text = "" } = props;
-
-    this.state = { value: text };
+    this.state = {
+      value: text,
+      typeaheadValue: text ? text.split(" & ") : [],
+    };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.text !== this.props.text) {
-      let { text = "" } = nextProps;
-
-      this.setState({ value: text });
+  static getDerivedStateFromProps(nextProps, prevState) {
+    if (nextProps.text !== prevState.text) {
+      return {
+        text: nextProps.text,
+      };
+    } else {
+      return null;
     }
   }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.text !== this.props.text) {
+      this.setState({
+        value: this.props.text,
+        typeaheadValue: this.props.text ? this.props.text.split(" & ") : [],
+      });
+    }
+  }
+
+  handleTypeaheadChange = items => {
+    let selectedValues = items.map(item =>
+      typeof item === "object" ? item.label : item
+    );
+    this.setState({ typeaheadValue: selectedValues });
+    this.props.onChange(selectedValues.join(" & "));
+  };
 
   handleChange = event => {
     this.setState({ value: event.target.value });
@@ -38,15 +60,25 @@ class Complaint extends Component {
     return (
       <Fragment>
         <td>
-          <input
-            autoFocus={true}
-            type="text"
-            value={this.state.value}
-            className="form-control"
-            onKeyDown={this.handleKeyDown}
-            onBlur={this.handleSubmit}
-            onChange={this.handleChange}
-          />
+          {this.props.uiDisplay == "typeahead" && this.props.uiOptions ? (
+            <Typeahead
+              selected={this.state.typeaheadValue}
+              onChange={this.handleTypeaheadChange}
+              placeholder="Choose an item..."
+              autoFocus={true}
+              {...this.props.uiOptions}
+            />
+          ) : (
+            <input
+              autoFocus={true}
+              type="text"
+              value={this.state.value}
+              className="form-control"
+              onKeyDown={this.handleKeyDown}
+              onBlur={this.handleSubmit}
+              onChange={this.handleChange}
+            />
+          )}
         </td>
         <td>
           <button className="btn btn-default" onClick={this.props.onDelete}>
@@ -58,7 +90,13 @@ class Complaint extends Component {
   }
 }
 
-export default function ComplaintText({ complaints, onChange, onDelete }) {
+export default function ComplaintText({
+  complaints,
+  onChange,
+  onDelete,
+  uiDisplay,
+  uiOptions,
+}) {
   return (
     <table className="table">
       <thead>
@@ -77,6 +115,15 @@ export default function ComplaintText({ complaints, onChange, onDelete }) {
                 {...complaint}
                 onChange={text => onChange(i, text)}
                 onDelete={() => onDelete(i)}
+                uiDisplay={uiDisplay}
+                uiOptions={{
+                  ...uiOptions,
+                  autoFocus:
+                    uiOptions &&
+                    uiOptions.autoFocus &&
+                    complaints.length - 1 === i &&
+                    complaint.text === undefined,
+                }}
               />
             </tr>
           </Fragment>
