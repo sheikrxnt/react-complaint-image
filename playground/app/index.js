@@ -49,8 +49,8 @@ const images = [
   },
 ];
 
+//eslint-disable-next-line
 const singleImageValue = {
-  //eslint-disable-line
   url: "/app/male-anatomy.jpg",
   complaints: [
     { pos: { x: 419, y: 36 }, text: "Hair burned" },

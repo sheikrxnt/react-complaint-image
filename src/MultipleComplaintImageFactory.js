@@ -12,12 +12,39 @@ export default function(Complaints, SelectImages) {
       super(props);
       let {
         value,
-        value: { active }, //: { url = props.images[0].url, complaints = [] } = {},
+        value: { active } = {}, //: { url = props.images[0].url, complaints = [] } = {},
       } = this.props;
 
-      this.state = { ...value };
-      this.changeImage(active, false);
+      let initVariables = {};
+      if (!value || this.isEmpty(value)) {
+        initVariables = this.initComplaintsObject();
+      }
+      let activeKey = active
+        ? active
+        : this.props.images && this.props.images[0].key;
+
+      this.state = {
+        ...value,
+        active: activeKey,
+        ...initVariables,
+      };
+      this.changeImage(activeKey, false);
     }
+
+    isEmpty = obj => {
+      return Object.keys(obj).length === 0 && obj.constructor === Object;
+    };
+
+    initComplaintsObject = () => {
+      return this.props.images.reduce((agg, item) => {
+        let key = item.key;
+        agg[key] = {
+          complaints: [],
+          url: item.url,
+        };
+        return agg;
+      }, []);
+    };
 
     changeImage = (active, notifyOnLoad = true) => {
       const image = new window.Image();
@@ -151,7 +178,7 @@ export default function(Complaints, SelectImages) {
         markerColors,
       } = this.props;
       let { active, image } = this.state;
-      let complaints = this.state[active].complaints;
+      let complaints = this.state[active] ? this.state[active].complaints : [];
 
       let uiDisplay = null;
       let uiOptions = null;
