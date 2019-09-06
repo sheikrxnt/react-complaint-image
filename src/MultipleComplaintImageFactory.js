@@ -24,6 +24,7 @@ export default function(Complaints, SelectImages) {
         : this.props.images && this.props.images[0].key;
 
       this.state = {
+        drawingMode: false,
         ...value,
         active: activeKey,
         ...initVariables,
@@ -51,6 +52,7 @@ export default function(Complaints, SelectImages) {
       let currentUrl = this.state[active] && this.state[active].url;
       image.src = currentUrl;
       image.onload = () => {
+        this.clearDrawings();
         if (notifyOnLoad) {
           this.setState({ image, active }, this.notify);
         } else {
@@ -60,39 +62,43 @@ export default function(Complaints, SelectImages) {
     };
 
     handleClick = evt => {
-      let {
-        currentTarget: { pointerPos },
-        target: { className },
-      } = evt;
-      if (className !== "Image") {
-        return;
-      }
+      if (!this.state.drawingMode) {
+        let {
+          currentTarget: { pointerPos },
+          target: { className },
+        } = evt;
+        if (className !== "Image") {
+          return;
+        }
 
-      this.setState(state => {
-        let { active } = state;
-        let activeObject = state[active];
-        let complaints = activeObject.complaints.concat({ pos: pointerPos });
-        let updatedItem = { [active]: { ...activeObject, complaints } };
-        return Object.assign({}, state, updatedItem);
-      }, this.notify);
+        this.setState(state => {
+          let { active } = state;
+          let activeObject = state[active];
+          let complaints = activeObject.complaints.concat({ pos: pointerPos });
+          let updatedItem = { [active]: { ...activeObject, complaints } };
+          return Object.assign({}, state, updatedItem);
+        }, this.notify);
+      }
     };
 
     handleTap = evt => {
-      let {
-        currentTarget: { pointerPos },
-        target: { className },
-      } = evt;
-      if (className !== "Image") {
-        return;
-      }
+      if (!this.state.drawingMode) {
+        let {
+          currentTarget: { pointerPos },
+          target: { className },
+        } = evt;
+        if (className !== "Image") {
+          return;
+        }
 
-      this.setState(state => {
-        let { active } = state;
-        let activeObject = state[active];
-        let complaints = activeObject.complaints.concat({ pos: pointerPos });
-        let updatedItem = { [active]: { ...activeObject, complaints } };
-        return Object.assign({}, state, updatedItem);
-      }, this.notify);
+        this.setState(state => {
+          let { active } = state;
+          let activeObject = state[active];
+          let complaints = activeObject.complaints.concat({ pos: pointerPos });
+          let updatedItem = { [active]: { ...activeObject, complaints } };
+          return Object.assign({}, state, updatedItem);
+        }, this.notify);
+      }
     };
 
     handleTextChange = (i, text) => {
@@ -122,13 +128,21 @@ export default function(Complaints, SelectImages) {
     };
 
     handleClearAll = () => {
+      this.clearDrawings();
       this.setState(state => {
         let { active } = state;
         let activeObj = state[active];
-        let updatedItem = { [active]: { ...activeObj, complaints: [] } };
+        let updatedItem = {
+          [active]: { ...activeObj, complaints: [], drawnPoints: [] },
+        };
         return Object.assign({}, state, updatedItem);
       }, this.notify);
     };
+
+    clearDrawings() {
+      let image = this.refs.drawinglayer;
+      image && image.clear();
+    }
 
     notify = () => {
       /** 
@@ -153,6 +167,27 @@ export default function(Complaints, SelectImages) {
       }, 0);
     };
 
+    componentWillUpdate(nextProps, nextState) {
+      if (this.state.active !== nextState.active) {
+        this.updateDrawing = true;
+      } else {
+        this.updateDrawing = false;
+      }
+    }
+
+    getDrawnPoints = points => {
+      if (points && points.length > 0) {
+        this.setState(state => {
+          let { active } = state;
+          let activeObject = state[active];
+          let updatedItem = {
+            [active]: { ...activeObject, drawnPoints: points },
+          };
+          return Object.assign({}, state, updatedItem);
+        });
+      }
+    };
+
     componentDidMount() {
       let { width } = ReactDOM.findDOMNode(
         this.refs["image-frame"]
@@ -160,6 +195,7 @@ export default function(Complaints, SelectImages) {
       let { imagePadding } = this.props;
 
       let stage = this.refs.stage.getStage();
+      this.imageSize = width - imagePadding;
 
       stage.width(width);
       stage.height(width);
@@ -197,49 +233,85 @@ export default function(Complaints, SelectImages) {
               selected={active}
               onSelect={this.changeImage}
             />
-            <div>
+            <div style={{ margin: "2px" }}>
               <a
-                className="btn"
+                className="complaint_image_link"
                 style={{
-                  position: "absolute",
                   left: "1px",
-                  padding: "2px",
                   zIndex: 1,
-                  fontSize: "10px",
-                  color: "red",
                 }}
                 onClick={this.handleClearAll}>
                 <span
-                  style={{ fontSize: "10px" }}
+                  style={{ fontSize: "11px" }}
                   className="glyphicon glyphicon-refresh"
                 />
                 &nbsp;Clear All
               </a>
+              <span className="pull-right">
+                Current Mode: &nbsp;
+                <a
+                  className="complaint_image_link"
+                  style={{
+                    right: "1px",
+                    zIndex: 1,
+                  }}
+                  onClick={() => {
+                    this.setState(state => {
+                      return { drawingMode: !state.drawingMode };
+                    });
+                  }}>
+                  <span
+                    style={{ fontSize: "10px" }}
+                    className="glyphicon glyphicon-plis"
+                  />
+                  &nbsp;
+                  {this.state.drawingMode ? "Drawing Mode" : "Selection Mode"}
+                </a>
+              </span>
             </div>
-            <Stage
-              onClick={this.handleClick}
-              onTap={this.handleTap}
-              ref="stage">
-              <Layer visible ref="layer">
-                <Image ref="image" image={image} />
-                {complaints.map((conf, i) => {
-                  let stroke = markerColors
-                    ? markerColors[i % markerColors.length]
-                    : circle.stroke;
-                  let markerConf = Object.assign({}, conf, circle, { stroke });
-                  return <ComplaintMarker key={i} {...markerConf} />;
-                })}
-                {complaints.map((conf, i) => {
-                  let fill = markerColors
-                    ? markerColors[i % markerColors.length]
-                    : circle.fill;
-                  let indicatorConf = Object.assign({}, conf, text, { fill });
-                  return (
-                    <ComplaintIndicator key={i} index={i} {...indicatorConf} />
-                  );
-                })}
-              </Layer>
-            </Stage>
+            <div
+              style={{ cursor: this.state.drawingMode ? "cell" : "default" }}>
+              <Stage
+                onClick={this.handleClick}
+                onTap={this.handleTap}
+                ref="stage">
+                <Layer visible ref="layer">
+                  <Image ref="image" image={image} />
+                  {this.imageSize && !this.updateDrawing && (
+                    <Drawing
+                      ref="drawinglayer"
+                      isDrawingMode={this.state.drawingMode}
+                      notifyParent={this.notify}
+                      parentImageSize={this.imageSize}
+                      getDrawnPoints={points => this.getDrawnPoints(points)}
+                      allPoints={this.state[this.state.active]["drawnPoints"]}
+                    />
+                  )}
+                  {complaints.map((conf, i) => {
+                    let stroke = markerColors
+                      ? markerColors[i % markerColors.length]
+                      : circle.stroke;
+                    let markerConf = Object.assign({}, conf, circle, {
+                      stroke,
+                    });
+                    return <ComplaintMarker key={i} {...markerConf} />;
+                  })}
+                  {complaints.map((conf, i) => {
+                    let fill = markerColors
+                      ? markerColors[i % markerColors.length]
+                      : circle.fill;
+                    let indicatorConf = Object.assign({}, conf, text, { fill });
+                    return (
+                      <ComplaintIndicator
+                        key={i}
+                        index={i}
+                        {...indicatorConf}
+                      />
+                    );
+                  })}
+                </Layer>
+              </Stage>
+            </div>
           </div>
           <div className={complaintClassName}>
             <Complaints
@@ -305,4 +377,171 @@ export default function(Complaints, SelectImages) {
   };
 
   return MultipleComplaintImage;
+}
+
+/**
+ * Class Component the inserts free drawn image of the layer in the stage
+ */
+class Drawing extends Component {
+  state = {
+    isDrawing: false,
+    currentPoints: [],
+    allPoints: [],
+  };
+
+  /**
+   * componentDidMount- creates the canvas element and adds that to local state
+   * If points are passed as props, those get drawn when the component loads
+   */
+  componentDidMount() {
+    const canvas = document.createElement("canvas");
+    canvas.width = this.props.parentImageSize;
+    canvas.height = this.props.parentImageSize;
+    const context = canvas.getContext("2d");
+    let allPointsArray = [];
+
+    if (this.props.allPoints && this.props.allPoints.length > 0) {
+      context.strokeStyle = "#df4b26";
+      context.lineJoin = "round";
+      context.lineWidth = 1;
+      context.beginPath();
+      this.props.allPoints.forEach(group => {
+        group.forEach((localPos, i) => {
+          if (i !== 0) {
+            context.lineTo(localPos.x, localPos.y);
+          }
+          context.moveTo(localPos.x, localPos.y);
+        });
+        context.closePath();
+        context.stroke();
+      });
+      this.image.getLayer().draw();
+      allPointsArray = this.props.allPoints;
+    }
+    this.setState(() => {
+      return { canvas, context, allPoints: allPointsArray };
+    }, this.props.notifyParent);
+  }
+
+  /**
+   * handleMouseDown- Function to handle mouse down operation
+   * function sets isDrawing to true and saves the first point to the state
+   */
+  handleMouseDown = () => {
+    if (!this.props.isDrawingMode) {
+      return;
+    }
+    this.setState(
+      () => {
+        return {
+          isDrawing: true,
+        };
+      },
+      () => {
+        const stage = this.image.parent.parent;
+        this.lastPointerPosition = stage.getPointerPosition();
+        var localPos = {
+          x: this.lastPointerPosition.x - this.image.x(),
+          y: this.lastPointerPosition.y - this.image.y(),
+        };
+        let currentPoints = [];
+        currentPoints.push(...this.state.currentPoints, localPos);
+        this.setState({
+          currentPoints: currentPoints,
+        });
+      }
+    );
+  };
+
+  /**
+   * handleMouseUp- This is where isDrawing is set to false, state is updated with
+   * the most recent points and parent component is notified
+   */
+  handleMouseUp = () => {
+    if (!this.props.isDrawingMode && !this.state.isDrawing) {
+      return;
+    }
+    if (this.state.currentPoints && this.state.currentPoints.length > 1) {
+      let allPoints = [...this.state.allPoints, this.state.currentPoints];
+      this.setState({ isDrawing: false, allPoints, currentPoints: [] });
+      this.props.getDrawnPoints(allPoints);
+    } else {
+      this.setState({ isDrawing: false, currentPoints: [] });
+    }
+    this.props.notifyParent();
+  };
+
+  /**
+   * clear() is used to clear the drawings
+   */
+  clear = () => {
+    const { context } = this.state;
+    context.clearRect(
+      0,
+      0,
+      this.props.parentImageSize,
+      this.props.parentImageSize
+    );
+    this.image.getLayer().draw();
+    this.setState({
+      allPoints: [],
+      currentPoints: [],
+    });
+  };
+  /**
+   * handleMouseMove- This is where the drawing logic is implemented using context.
+   * points are added to the state too
+   */
+  handleMouseMove = () => {
+    const { context, isDrawing } = this.state;
+    if (!this.props.isDrawingMode) {
+      return;
+    }
+    if (isDrawing) {
+      context.strokeStyle = "#df4b26";
+      context.lineJoin = "round";
+      context.lineWidth = 1;
+
+      context.globalCompositeOperation = "source-over";
+      context.beginPath();
+
+      var localPos = {
+        x: this.lastPointerPosition.x - this.image.x(),
+        y: this.lastPointerPosition.y - this.image.y(),
+      };
+      context.moveTo(localPos.x, localPos.y);
+
+      const stage = this.image.parent.parent;
+      var pos = stage.getPointerPosition();
+      localPos = {
+        x: pos.x - this.image.x(),
+        y: pos.y - this.image.y(),
+      };
+      context.lineTo(localPos.x, localPos.y);
+      context.closePath();
+      context.stroke();
+      this.lastPointerPosition = pos;
+      this.image.getLayer().draw();
+
+      let currentPoints = [];
+      currentPoints.push(...this.state.currentPoints, localPos);
+      this.setState({ currentPoints: currentPoints });
+    }
+  };
+
+  render() {
+    const { canvas } = this.state;
+    return (
+      <Image
+        image={canvas}
+        ref={node => (this.image = node)}
+        width={this.props.parentImageSize}
+        height={this.props.parentImageSize}
+        onMouseDown={this.handleMouseDown}
+        onMouseUp={this.handleMouseUp}
+        onMouseMove={this.handleMouseMove}
+        onMouseLeave={this.handleMouseUp}
+      />
+    );
+  }
 }
