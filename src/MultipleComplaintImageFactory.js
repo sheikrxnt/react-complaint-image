@@ -233,7 +233,7 @@ export default function(Complaints, SelectImages) {
               selected={active}
               onSelect={this.changeImage}
             />
-            <div style={{ margin: "2px" }}>
+            <div style={{ margin: "3px" }}>
               <a
                 className="complaint_image_link"
                 style={{
@@ -248,25 +248,30 @@ export default function(Complaints, SelectImages) {
                 &nbsp;Clear All
               </a>
               <span className="pull-right">
-                Current Mode: &nbsp;
-                <a
-                  className="complaint_image_link"
-                  style={{
-                    right: "1px",
-                    zIndex: 1,
-                  }}
-                  onClick={() => {
-                    this.setState(state => {
-                      return { drawingMode: !state.drawingMode };
-                    });
-                  }}>
-                  <span
-                    style={{ fontSize: "10px" }}
-                    className="glyphicon glyphicon-plis"
+                <label className="radio-inline" style={{ display: "inline" }}>
+                  <input
+                    type="radio"
+                    checked={!this.state.drawingMode}
+                    onChange={() => {
+                      this.setState(() => {
+                        return { drawingMode: false };
+                      });
+                    }}
                   />
-                  &nbsp;
-                  {this.state.drawingMode ? "Drawing Mode" : "Selection Mode"}
-                </a>
+                  Selection Mode
+                </label>
+                <label className="radio-inline" style={{ display: "inline" }}>
+                  <input
+                    type="radio"
+                    checked={this.state.drawingMode}
+                    onChange={() => {
+                      this.setState(() => {
+                        return { drawingMode: true };
+                      });
+                    }}
+                  />
+                  Drawing Mode
+                </label>
               </span>
             </div>
             <div
