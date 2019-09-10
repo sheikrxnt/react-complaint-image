@@ -248,7 +248,7 @@ export default function(Complaints, SelectImages) {
                 &nbsp;Clear All
               </a>
               <span className="pull-right">
-                <label className="radio-inline" style={{ display: "inline" }}>
+                <label className="radio-inline select-mode-container">
                   <input
                     type="radio"
                     checked={!this.state.drawingMode}
@@ -260,7 +260,7 @@ export default function(Complaints, SelectImages) {
                   />
                   Selection Mode
                 </label>
-                <label className="radio-inline" style={{ display: "inline" }}>
+                <label className="radio-inline draw-mode-container">
                   <input
                     type="radio"
                     checked={this.state.drawingMode}
@@ -274,6 +274,7 @@ export default function(Complaints, SelectImages) {
                 </label>
               </span>
             </div>
+            <hr />
             <div
               style={{ cursor: this.state.drawingMode ? "cell" : "default" }}>
               <Stage
