@@ -12,7 +12,7 @@ export default function(Complaints, SelectImages) {
       super(props);
       let {
         value,
-        value: { active } = {}, //: { url = props.images[0].url, complaints = [] } = {},
+        value: { active } = {} //: { url = props.images[0].url, complaints = [] } = {},
       } = this.props;
 
       let initVariables = {};
@@ -27,7 +27,7 @@ export default function(Complaints, SelectImages) {
         drawingMode: false,
         ...value,
         active: activeKey,
-        ...initVariables,
+        ...initVariables
       };
       this.changeImage(activeKey, false);
     }
@@ -41,7 +41,7 @@ export default function(Complaints, SelectImages) {
         let key = item.key;
         agg[key] = {
           complaints: [],
-          url: item.url,
+          url: item.url
         };
         return agg;
       }, []);
@@ -65,7 +65,7 @@ export default function(Complaints, SelectImages) {
       if (!this.state.drawingMode) {
         let {
           currentTarget: { pointerPos },
-          target: { className },
+          target: { className }
         } = evt;
         if (className !== "Image") {
           return;
@@ -75,7 +75,11 @@ export default function(Complaints, SelectImages) {
           let { active } = state;
           let activeObject = state[active];
           let complaints = activeObject.complaints.concat({ pos: pointerPos });
-          let updatedItem = { [active]: { ...activeObject, complaints } };
+          let currentWidth = this.currentWidth;
+          let updatedItem = {
+            [active]: { ...activeObject, complaints },
+            srcWidth: currentWidth
+          };
           return Object.assign({}, state, updatedItem);
         }, this.notify);
       }
@@ -85,7 +89,7 @@ export default function(Complaints, SelectImages) {
       if (!this.state.drawingMode) {
         let {
           currentTarget: { pointerPos },
-          target: { className },
+          target: { className }
         } = evt;
         if (className !== "Image") {
           return;
@@ -95,7 +99,11 @@ export default function(Complaints, SelectImages) {
           let { active } = state;
           let activeObject = state[active];
           let complaints = activeObject.complaints.concat({ pos: pointerPos });
-          let updatedItem = { [active]: { ...activeObject, complaints } };
+          let currentWidth = this.currentWidth;
+          let updatedItem = {
+            [active]: { ...activeObject, complaints },
+            srcWidth: currentWidth
+          };
           return Object.assign({}, state, updatedItem);
         }, this.notify);
       }
@@ -109,8 +117,11 @@ export default function(Complaints, SelectImages) {
         let complaint = Object.assign({}, complaints[i], { text });
         complaints = complaints.slice();
         complaints.splice(i, 1, complaint);
-
-        let updatedItem = { [active]: { ...activeObj, complaints } };
+        let currentWidth = this.currentWidth;
+        let updatedItem = {
+          [active]: { ...activeObj, complaints },
+          srcWidth: currentWidth
+        };
         return Object.assign({}, state, updatedItem);
       }, this.notify);
     };
@@ -122,7 +133,11 @@ export default function(Complaints, SelectImages) {
         let complaints = activeObj.complaints;
         complaints = complaints.slice();
         complaints.splice(i, 1);
-        let updatedItem = { [active]: { ...activeObj, complaints } };
+        let currentWidth = this.currentWidth;
+        let updatedItem = {
+          [active]: { ...activeObj, complaints },
+          srcWidth: currentWidth
+        };
         return Object.assign({}, state, updatedItem);
       }, this.notify);
     };
@@ -133,7 +148,7 @@ export default function(Complaints, SelectImages) {
         let { active } = state;
         let activeObj = state[active];
         let updatedItem = {
-          [active]: { ...activeObj, complaints: [], drawnPoints: [] },
+          [active]: { ...activeObj, complaints: [], drawnPoints: [] }
         };
         return Object.assign({}, state, updatedItem);
       }, this.notify);
@@ -160,7 +175,7 @@ export default function(Complaints, SelectImages) {
           let stage = this.refs.stage.getStage();
           values[active] ? (values[active].dataURI = stage.toDataURL()) : null;
           let event = {
-            ...values,
+            ...values
           };
           this.props.onChange(event);
         }
@@ -176,12 +191,14 @@ export default function(Complaints, SelectImages) {
     }
 
     getDrawnPoints = points => {
+      let currentWidth = this.currentWidth;
       if (points && points.length > 0) {
         this.setState(state => {
           let { active } = state;
           let activeObject = state[active];
           let updatedItem = {
             [active]: { ...activeObject, drawnPoints: points },
+            srcWidth: currentWidth
           };
           return Object.assign({}, state, updatedItem);
         });
@@ -194,6 +211,8 @@ export default function(Complaints, SelectImages) {
       ).getBoundingClientRect();
       let { imagePadding } = this.props;
 
+      this.currentWidth = width;
+
       let stage = this.refs.stage.getStage();
       this.imageSize = width - imagePadding;
 
@@ -203,6 +222,21 @@ export default function(Complaints, SelectImages) {
       let image = this.refs.image;
       image.width(width - imagePadding);
       image.height(width - imagePadding);
+
+      let { active } = this.state;
+      let complaints = this.state[active] ? this.state[active].complaints : [];
+      let srcWidth = this.state.srcWidth;
+
+      if (srcWidth && this.currentWidth !== srcWidth && complaints.length > 0) {
+        complaints.forEach(item => {
+          let positionX = "";
+          let positionY = "";
+          positionX = item.pos.x * (this.currentWidth / srcWidth);
+          positionY = item.pos.y * (this.currentWidth / srcWidth);
+          item.pos.x = Math.round(positionX);
+          item.pos.y = Math.round(positionY);
+        });
+      }
     }
 
     render() {
@@ -211,7 +245,7 @@ export default function(Complaints, SelectImages) {
         complaint: { circle, text },
         imageClassName,
         complaintClassName,
-        markerColors,
+        markerColors
       } = this.props;
       let { active, image } = this.state;
       let complaints = this.state[active] ? this.state[active].complaints : [];
@@ -238,9 +272,10 @@ export default function(Complaints, SelectImages) {
                 className="complaint_image_link"
                 style={{
                   left: "1px",
-                  zIndex: 1,
+                  zIndex: 1
                 }}
-                onClick={this.handleClearAll}>
+                onClick={this.handleClearAll}
+              >
                 <span
                   style={{ fontSize: "11px" }}
                   className="glyphicon glyphicon-refresh"
@@ -276,11 +311,13 @@ export default function(Complaints, SelectImages) {
             </div>
             <hr />
             <div
-              style={{ cursor: this.state.drawingMode ? "cell" : "default" }}>
+              style={{ cursor: this.state.drawingMode ? "cell" : "default" }}
+            >
               <Stage
                 onClick={this.handleClick}
                 onTap={this.handleTap}
-                ref="stage">
+                ref="stage"
+              >
                 <Layer visible ref="layer">
                   <Image ref="image" image={image} />
                   {this.imageSize && !this.updateDrawing && (
@@ -291,6 +328,8 @@ export default function(Complaints, SelectImages) {
                       parentImageSize={this.imageSize}
                       getDrawnPoints={points => this.getDrawnPoints(points)}
                       allPoints={this.state[this.state.active]["drawnPoints"]}
+                      srcWidth={this.state.srcWidth}
+                      currentWidth={this.currentWidth}
                     />
                   )}
                   {complaints.map((conf, i) => {
@@ -298,7 +337,7 @@ export default function(Complaints, SelectImages) {
                       ? markerColors[i % markerColors.length]
                       : circle.stroke;
                     let markerConf = Object.assign({}, conf, circle, {
-                      stroke,
+                      stroke
                     });
                     return <ComplaintMarker key={i} {...markerConf} />;
                   })}
@@ -339,17 +378,17 @@ export default function(Complaints, SelectImages) {
       circle: {
         radius: 10,
         stroke: "#38A8E8",
-        strokeWidth: 2,
+        strokeWidth: 2
       },
       text: {
         fontSize: 12,
         fontFamily: "Roboto",
-        fill: "black",
-      },
+        fill: "black"
+      }
     },
     imagePadding: 30,
     imageClassName: "col-md-5 col-sm-12",
-    complaintClassName: "col-md-7 col-sm-12",
+    complaintClassName: "col-md-7 col-sm-12"
   };
 
   MultipleComplaintImage.propTypes = {
@@ -358,16 +397,16 @@ export default function(Complaints, SelectImages) {
         PropTypes.shape({
           pos: PropTypes.shape({
             x: PropTypes.number.isRequired,
-            y: PropTypes.number.isRequired,
+            y: PropTypes.number.isRequired
           }),
-          text: PropTypes.string.isRequired,
+          text: PropTypes.string.isRequired
         })
-      ),
+      )
     }),
     images: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string.isRequired,
-        url: PropTypes.string.isRequired,
+        url: PropTypes.string.isRequired
       })
     ).isRequired,
     imagePadding: PropTypes.number,
@@ -376,10 +415,10 @@ export default function(Complaints, SelectImages) {
     complaint: PropTypes.shape({
       radius: PropTypes.number,
       stroke: PropTypes.string,
-      strokeWidth: PropTypes.number,
+      strokeWidth: PropTypes.number
     }),
     markerColors: PropTypes.arrayOf(PropTypes.string),
-    onChange: PropTypes.func,
+    onChange: PropTypes.func
   };
 
   return MultipleComplaintImage;
@@ -392,7 +431,7 @@ class Drawing extends Component {
   state = {
     isDrawing: false,
     currentPoints: [],
-    allPoints: [],
+    allPoints: []
   };
 
   /**
@@ -405,7 +444,8 @@ class Drawing extends Component {
     canvas.height = this.props.parentImageSize;
     const context = canvas.getContext("2d");
     let allPointsArray = [];
-
+    const srcWidth = this.props.srcWidth;
+    const currentWidth = this.props.currentWidth;
     if (this.props.allPoints && this.props.allPoints.length > 0) {
       context.strokeStyle = "#df4b26";
       context.lineJoin = "round";
@@ -413,6 +453,14 @@ class Drawing extends Component {
       context.beginPath();
       this.props.allPoints.forEach(group => {
         group.forEach((localPos, i) => {
+          if (srcWidth && currentWidth !== srcWidth) {
+            var positionX = "";
+            var positionY = "";
+            positionX = localPos.x * (currentWidth / srcWidth);
+            positionY = localPos.y * (currentWidth / srcWidth);
+            localPos.x = Math.round(positionX);
+            localPos.y = Math.round(positionY);
+          }
           if (i !== 0) {
             context.lineTo(localPos.x, localPos.y);
           }
@@ -440,7 +488,7 @@ class Drawing extends Component {
     this.setState(
       () => {
         return {
-          isDrawing: true,
+          isDrawing: true
         };
       },
       () => {
@@ -448,12 +496,12 @@ class Drawing extends Component {
         this.lastPointerPosition = stage.getPointerPosition();
         var localPos = {
           x: this.lastPointerPosition.x - this.image.x(),
-          y: this.lastPointerPosition.y - this.image.y(),
+          y: this.lastPointerPosition.y - this.image.y()
         };
         let currentPoints = [];
         currentPoints.push(...this.state.currentPoints, localPos);
         this.setState({
-          currentPoints: currentPoints,
+          currentPoints: currentPoints
         });
       }
     );
@@ -491,7 +539,7 @@ class Drawing extends Component {
     this.image.getLayer().draw();
     this.setState({
       allPoints: [],
-      currentPoints: [],
+      currentPoints: []
     });
   };
   /**
@@ -513,7 +561,7 @@ class Drawing extends Component {
 
       var localPos = {
         x: this.lastPointerPosition.x - this.image.x(),
-        y: this.lastPointerPosition.y - this.image.y(),
+        y: this.lastPointerPosition.y - this.image.y()
       };
       context.moveTo(localPos.x, localPos.y);
 
@@ -521,7 +569,7 @@ class Drawing extends Component {
       var pos = stage.getPointerPosition();
       localPos = {
         x: pos.x - this.image.x(),
-        y: pos.y - this.image.y(),
+        y: pos.y - this.image.y()
       };
       context.lineTo(localPos.x, localPos.y);
       context.closePath();
