@@ -167,6 +167,12 @@ export default function(Complaints, SelectImages) {
         or use promise new Promise((event) => setTimeout(event, 10)).then(()=> {
       */
 
+      if (this.state.srcWidth !== undefined) {
+        this.setState({
+          srcWidth: this.currentWidth
+        });
+      }
+
       setTimeout(() => {
         // this is done to prevent passing active and image objects to the onchange event
         let { image, ...values } = this.state;
@@ -213,6 +219,8 @@ export default function(Complaints, SelectImages) {
 
       this.currentWidth = width;
 
+      this.currentSrcWidth = this.state.srcWidth;
+
       let stage = this.refs.stage.getStage();
       this.imageSize = width - imagePadding;
 
@@ -222,21 +230,6 @@ export default function(Complaints, SelectImages) {
       let image = this.refs.image;
       image.width(width - imagePadding);
       image.height(width - imagePadding);
-
-      let { active } = this.state;
-      let complaints = this.state[active] ? this.state[active].complaints : [];
-      let srcWidth = this.state.srcWidth;
-
-      if (srcWidth && this.currentWidth !== srcWidth && complaints.length > 0) {
-        complaints.forEach(item => {
-          let positionX = "";
-          let positionY = "";
-          positionX = item.pos.x * (this.currentWidth / srcWidth);
-          positionY = item.pos.y * (this.currentWidth / srcWidth);
-          item.pos.x = Math.round(positionX);
-          item.pos.y = Math.round(positionY);
-        });
-      }
     }
 
     render() {
@@ -328,7 +321,8 @@ export default function(Complaints, SelectImages) {
                       parentImageSize={this.imageSize}
                       getDrawnPoints={points => this.getDrawnPoints(points)}
                       allPoints={this.state[this.state.active]["drawnPoints"]}
-                      srcWidth={this.state.srcWidth}
+                      complaints={this.state[this.state.active]["complaints"]}
+                      srcWidth={this.currentSrcWidth}
                       currentWidth={this.currentWidth}
                     />
                   )}
@@ -446,6 +440,21 @@ class Drawing extends Component {
     let allPointsArray = [];
     const srcWidth = this.props.srcWidth;
     const currentWidth = this.props.currentWidth;
+    if (
+      srcWidth &&
+      this.currentWidth !== srcWidth &&
+      this.props.complaints &&
+      this.props.complaints.length > 0
+    ) {
+      this.props.complaints.forEach(item => {
+        let positionX = "";
+        let positionY = "";
+        positionX = item.pos.x * (currentWidth / srcWidth);
+        positionY = item.pos.y * (currentWidth / srcWidth);
+        item.pos.x = Math.round(positionX);
+        item.pos.y = Math.round(positionY);
+      });
+    }
     if (this.props.allPoints && this.props.allPoints.length > 0) {
       context.strokeStyle = "#df4b26";
       context.lineJoin = "round";
